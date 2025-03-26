@@ -13,7 +13,7 @@ function App() {
           <Route
             path="/users"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute >
                 <ListUsers/>
               </ProtectedRoute>
             }
