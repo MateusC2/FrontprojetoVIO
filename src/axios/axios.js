@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-    baseURL:"http://10.89.240.35:5000/api/v1/",
+    baseURL:"http://10.89.240.80:5000/api/v1/",
     headers:{
         'accept':'application/json'
     }
@@ -9,7 +9,8 @@ const api = axios.create({
 
 const sheets = {
     getUsers:()=>api.get("user"),
-    postLogin:(user) => api.post("login/", user)
+    postLogin:(user) => api.post("login/", user),
+    deleteUser:(id) => api.delete("user/"+id)
 }
 
-export default sheets;
+export default sheets;  

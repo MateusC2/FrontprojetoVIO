@@ -10,16 +10,34 @@ import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import Paper from "@mui/material/Paper";
 import api from "../axios/axios";
-import { Button } from "@mui/material";
-import { Link , useNavigate} from "react-router-dom";
+import { Button, IconButton, Alert, Snackbar } from "@mui/material";
+// import { DeleteOutlineIcon } from "@mui/icons-material/DeleteOutlineOutlined";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { Link, useNavigate } from "react-router-dom";
 
-function listUsers() {
+function ListUsers() {
   const [users, setUsers] = useState([]);
+  const [alert, setAlert] = useState({
+    //Visibilidade (false=oculta; true = visivel)
+    open: false,
+    //Nivel do alerta (sucess, error , warning, etc)
+    severity: "",
+    //Mensagem que será exibida
+    message: ""
+  });
+  //Função para exibir o alerta
+  const showAlert = (severity, message) => {
+    setAlert({ open: true, severity: severity, message: message });
+  };
+  //Função para fechar o alerta
+  const handleCloseAlert = () => {
+    setAlert({ ...alert, open: false });
+  };
   const navigate = useNavigate();
-  
-  function logout(){
+
+  function logout() {
     localStorage.removeItem("authenticated");
-    navigate("/")
+    navigate("/");
   }
 
   async function getUsers() {
@@ -34,13 +52,31 @@ function listUsers() {
       }
     );
   }
+  async function deleteUser (id) {
+    try{
+      await api.deleteUser(id);
+      await getUsers();
+      //Mensagem informativa de successo
+      showAlert("success", "Usuario deletado com sucesso!");
+      //Mensagem informativa de successo
+    }catch(error){
+      console.log("Erro ao deletar usuario...", error);
+      //Mensagem informativa de error
+      showAlert("error", error.response.data.message);
+    }
+  }
 
   const listUsers = users.map((user) => {
     return (
-      <TableRow key={user.id_usuario}>
+      <TableRow key = {user.id_usuario}>
         <TableCell align="center">{user.name}</TableCell>
         <TableCell align="center">{user.email}</TableCell>
         <TableCell align="center">{user.cpf}</TableCell>
+        <TableCell align="center">
+          <IconButton onClick={() => deleteUser(user.id_usuario)}>
+            <DeleteIcon color="error" />
+          </IconButton>
+        </TableCell>
       </TableRow>
     );
   });
@@ -54,27 +90,55 @@ function listUsers() {
 
   return (
     <div>
-      {users.lenght === 0 ?(<p>Carregando usuarios</p>): (
-      <div>
-      <h5>Lista de usuários</h5>
-      <TableContainer component={Paper} style={{ margin: "2px" }}>
-        <Table size="small">
-          <TableHead style={{ backgroundColor: "brown", borderStyle: "solid" }}>
-            <TableRow>
-              <TableCell align="center">Nome</TableCell>
-              <TableCell align="center">Email</TableCell>
-              <TableCell align="center">CPF</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>{listUsers}</TableBody>
-        </Table>
-      </TableContainer>
-      <Button fullWidth variant="contained" component={Link} to="/" onClick={logout}>
-        SAIR
-      </Button>
-      </div>
+      <Snackbar
+        open={alert.open}
+        autoHideDuration={3000}
+        onClose={handleCloseAlert}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleCloseAlert}
+          severity={alert.severity}
+          sx={{ width: "100%" }}
+        >
+          {alert.message || "Algo aconteceu"}
+        </Alert>
+      </Snackbar>
+      {users.length === 0 ? (
+        <h1>Carregando usuarios</h1>
+      ) : (
+        <div>
+          <h5>Lista de usuários</h5>
+          <TableContainer component={Paper} style={{ margin: "2px" }}>
+            <Table size="small">
+              <TableHead
+                style={{ backgroundColor: "brown", borderStyle: "solid" }}
+              >
+                <TableRow>
+                  <TableCell align="center">Nome</TableCell>
+                  <TableCell align="center">Email</TableCell>
+                  <TableCell align="center">CPF</TableCell>
+                  <TableCell align="center">Ações</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>{listUsers}</TableBody>
+            </Table>
+          </TableContainer>
+          <Button
+            fullWidth
+            variant="contained"
+            component={Link}
+            to="/"
+            onClick={logout}
+          >
+            SAIR
+          </Button>
+          <Button fullWidth variant="contained" component={Link} to="/">
+            Lista Salas
+          </Button>
+        </div>
       )}
     </div>
   );
 }
-export default listUsers;
+export default ListUsers;
