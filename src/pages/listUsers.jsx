@@ -101,11 +101,11 @@ function ListUsers() {
           severity={alert.severity}
           sx={{ width: "100%" }}
         >
-          {alert.message || "Algo aconteceu"}
+          {alert.message}
         </Alert>
       </Snackbar>
       {users.length === 0 ? (
-        <h1>Carregando usuarios</h1>
+          <h1>Carregando Usuarios</h1>
       ) : (
         <div>
           <h5>Lista de usuários</h5>
@@ -133,8 +133,9 @@ function ListUsers() {
           >
             SAIR
           </Button>
-          <Button fullWidth variant="contained" component={Link} to="/">
-            Lista Salas
+          <p></p>
+          <Button fullWidth variant="contained" component={Link} to="/events">
+            Lista Salas Eventos
           </Button>
         </div>
       )}
