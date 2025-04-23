@@ -14,6 +14,7 @@ import { Button, IconButton, Alert, Snackbar } from "@mui/material";
 // import { DeleteOutlineIcon } from "@mui/icons-material/DeleteOutlineOutlined";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Link, useNavigate } from "react-router-dom";
+import ConfirmDelete from "../components/ConfirmDelete";
 
 function ListUsers() {
   const [users, setUsers] = useState([]);
@@ -35,10 +36,20 @@ function ListUsers() {
   };
   const navigate = useNavigate();
 
+  const [userToDelete, setuserToDelete] = useState("");
+  const [ModalOpen, setModalOpen] = useState(false);
+
   function logout() {
     localStorage.removeItem("authenticated");
     navigate("/");
   }
+
+
+  const openDeleteModal = (id,name) => {
+    setuserToDelete({id: id, name : name});
+    setModalOpen(true);
+  }
+
 
   async function getUsers() {
     // Chamada da Api
@@ -52,17 +63,18 @@ function ListUsers() {
       }
     );
   }
-  async function deleteUser (id) {
+  async function deleteUser () {
     try{
-      await api.deleteUser(id);
+      await api.deleteUser(userToDelete.id);
       await getUsers();
       //Mensagem informativa de successo
       showAlert("success", "Usuario deletado com sucesso!");
-      //Mensagem informativa de successo
+      setModalOpen(false);
     }catch(error){
       console.log("Erro ao deletar usuario...", error);
       //Mensagem informativa de error
       showAlert("error", error.response.data.message);
+      setModalOpen(false);
     }
   }
 
@@ -73,7 +85,7 @@ function ListUsers() {
         <TableCell align="center">{user.email}</TableCell>
         <TableCell align="center">{user.cpf}</TableCell>
         <TableCell align="center">
-          <IconButton onClick={() => deleteUser(user.id_usuario)}>
+          <IconButton onClick={() => openDeleteModal(user.id_usuario,user.name)}>
             <DeleteIcon color="error" />
           </IconButton>
         </TableCell>
@@ -104,6 +116,13 @@ function ListUsers() {
           {alert.message}
         </Alert>
       </Snackbar>
+      <ConfirmDelete 
+      open={ModalOpen} 
+      userName={userToDelete.name} 
+      onConfirm = {deleteUser}
+      onClose={()=> setModalOpen(false)}
+
+      />
       {users.length === 0 ? (
           <h1>Carregando Usuarios</h1>
       ) : (
@@ -130,11 +149,12 @@ function ListUsers() {
             component={Link}
             to="/"
             onClick={logout}
+            style={{ backgroundColor: "brown", borderStyle: "solid" }}
           >
             SAIR
           </Button>
           <p></p>
-          <Button fullWidth variant="contained" component={Link} to="/events">
+          <Button fullWidth variant="contained" component={Link} to="/events" style={{ backgroundColor: "brown", borderStyle: "solid" }}>
             Lista Salas Eventos
           </Button>
         </div>

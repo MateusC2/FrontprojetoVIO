@@ -14,6 +14,7 @@ import { Button, IconButton, Alert, Snackbar } from "@mui/material";
 // import { DeleteOutlineIcon } from "@mui/icons-material/DeleteOutlineOutlined";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Link, useNavigate } from "react-router-dom";
+import ConfirmDelete from "../components/ConfirmDelete";
 
 function ListEvents() {
   const [events, setEvents] = useState([]);
@@ -35,10 +36,18 @@ function ListEvents() {
   };
   const navigate = useNavigate();
 
+  const [userToDelete, setuserToDelete] = useState("");
+  const [ModalOpen, setModalOpen] = useState(false);
+
   function logout() {
     localStorage.removeItem("authenticated");
     navigate("/");
   }
+
+  const openDeleteModal = (id, nome) => {
+    setuserToDelete({ id: id, nome: nome });
+    setModalOpen(true);
+  };
 
   async function getAllEventos() {
     // Chamada da Api
@@ -52,9 +61,9 @@ function ListEvents() {
       }
     );
   }
-  async function deleteEvento(id) {
+  async function deleteEvento() {
     try {
-      const response = await api.deleteEvento(id);
+      const response = await api.deleteEvento(userToDelete.id);
       await getAllEventos();
       //Mensagem informativa de successo
       showAlert("success", response.data.message);
@@ -74,7 +83,9 @@ function ListEvents() {
         <TableCell align="center">{events.data_hora}</TableCell>
         <TableCell align="center">{events.local}</TableCell>
         <TableCell align="center">
-          <IconButton onClick={() => deleteEvento(events.id_evento)}>
+          <IconButton
+            onClick={() => openDeleteModal(events.id_evento, events.nome)}
+          >
             <DeleteIcon color="error" />
           </IconButton>
         </TableCell>
@@ -97,6 +108,12 @@ function ListEvents() {
         onClose={handleCloseAlert}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
+        <ConfirmDelete
+          open={ModalOpen}
+          userName={userToDelete.nome}
+          onConfirm={deleteEvento}
+          onClose={() => setModalOpen(false)}
+        />
         <Alert
           onClose={handleCloseAlert}
           severity={alert.severity}
@@ -143,9 +160,9 @@ function ListEvents() {
             variant="contained"
             component={Link}
             style={{ backgroundColor: "brown", borderStyle: "solid" }}
-            to="/"
+            to="/users"
           >
-            Lista Salas Eventos
+            Lista Salas Usuarios
           </Button>
         </div>
       )}
