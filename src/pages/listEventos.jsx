@@ -11,44 +11,34 @@ import TableCell from "@mui/material/TableCell";
 import Paper from "@mui/material/Paper";
 import api from "../axios/axios";
 import { Button, IconButton, Alert, Snackbar } from "@mui/material";
-// import { DeleteOutlineIcon } from "@mui/icons-material/DeleteOutlineOutlined";
-import DeleteIcon from "@mui/icons-material/Delete";
 import { Link, useNavigate } from "react-router-dom";
-import ConfirmDelete from "../components/ConfirmDelete";
+import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from "@mui/icons-material/Add";
+import ModalCriarIngresso from "../components/ModalCriarIngresso";
 
-function ListEvents() {
+function listEvents() {
   const [events, setEvents] = useState([]);
   const [alert, setAlert] = useState({
-    //Visibilidade (false=oculta; true = visivel)
+    // visibilidade (false = oculto; true= visivel)
     open: false,
-    //Nivel do alerta (sucess, error , warning, etc)
+
+    // Nivel do alerta (sucess, error, warning, etc)
     severity: "",
-    //Mensagem que será exibida
+
+    // Mensagem que sera exibida
     message: "",
   });
-  //Função para exibir o alerta
+
+  //função para exibir o alerta
   const showAlert = (severity, message) => {
-    setAlert({ open: true, severity: severity, message: message });
+    setAlert({ open: true, severity, message });
   };
-  //Função para fechar o alerta
+
   const handleCloseAlert = () => {
     setAlert({ ...alert, open: false });
   };
+
   const navigate = useNavigate();
-
-  const [userToDelete, setuserToDelete] = useState("");
-  const [ModalOpen, setModalOpen] = useState(false);
-
-  function logout() {
-    localStorage.removeItem("authenticated");
-    navigate("/");
-  }
-
-  const openDeleteModal = (id, nome) => {
-    setuserToDelete({ id: id, nome: nome });
-    setModalOpen(true);
-  };
-
   async function getAllEventos() {
     // Chamada da Api
     await api.getAllEventos().then(
@@ -61,44 +51,69 @@ function ListEvents() {
       }
     );
   }
-  async function deleteEvento() {
+
+  async function deleteEvento(id) {
     try {
-      const response = await api.deleteEvento(userToDelete.id);
+      await api.deleteEvento(id);
       await getAllEventos();
-      //Mensagem informativa de successo
-      showAlert("success", response.data.message);
-      //Mensagem informativa de successo
+      // mensagem informativa
+      showAlert("success", "Evento Excluido com Sucesso!");
     } catch (error) {
-      console.log("Erro ao deletar usuario...", error);
-      //Mensagem informativa de error
-      showAlert("error", error.response.data.message);
+      console.log("Erro ao deletar usuário...", error);
+      showAlert("error", error.response.data.error);
     }
   }
 
-  const listEvents = events.map((events) => {
+  const listEvents = events.map((event) => {
     return (
-      <TableRow key={events.id_evento}>
-        <TableCell align="center">{events.nome}</TableCell>
-        <TableCell align="center">{events.descricao}</TableCell>
-        <TableCell align="center">{events.data_hora}</TableCell>
-        <TableCell align="center">{events.local}</TableCell>
+      <TableRow key={event.id_evento}>
+        <TableCell align="center">{event.nome}</TableCell>
+        <TableCell align="center">{event.descricao}</TableCell>
+        <TableCell align="center">{event.data_hora}</TableCell>
+        <TableCell align="center">{event.local}</TableCell>
+
         <TableCell align="center">
-          <IconButton
-            onClick={() => openDeleteModal(events.id_evento, events.nome)}
-          >
+          <IconButton onClick={() => deleteEvento(event.id_evento)}>
             <DeleteIcon color="error" />
+          </IconButton>
+        </TableCell>
+        <TableCell align="center">
+          <IconButton onClick={() => abrirModalIngresso(event)}>
+            <AddIcon color="black" />
           </IconButton>
         </TableCell>
       </TableRow>
     );
   });
 
+  function logout() {
+    localStorage.removeItem("authenticated");
+    navigate("/");
+  }
+
+  function redUsers() {
+    navigate("/users");
+  }
+
   useEffect(() => {
-    // if(!localStorage.getItem("authenticated")){
-    //   navigate("/")
+    // if (!localStorage.getItem("authenticated")) {
+    //   navigate("/");
     // }
     getAllEventos();
   }, []);
+
+  const [eventoSelecionado, setEventoSelecionado] = useState("");
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const abrirModalIngresso = (evento) => {
+    setEventoSelecionado(evento);
+    setModalOpen(true);
+  };
+
+  const fecharModalIngresso = () => {
+    setModalOpen(false);
+    setEventoSelecionado("");
+  };
 
   return (
     <div>
@@ -108,65 +123,57 @@ function ListEvents() {
         onClose={handleCloseAlert}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
-        <ConfirmDelete
-          open={ModalOpen}
-          userName={userToDelete.nome}
-          onConfirm={deleteEvento}
-          onClose={() => setModalOpen(false)}
-        />
         <Alert
           onClose={handleCloseAlert}
           severity={alert.severity}
-          sx={{ width: "100%" }}
+          sx={{
+            width: "100%",
+          }}
         >
           {alert.message}
         </Alert>
       </Snackbar>
+
+      <ModalCriarIngresso
+        open={modalOpen}
+        onClose={fecharModalIngresso}
+        eventoSelecionado={eventoSelecionado}
+      />
+
       {events.length === 0 ? (
-        <h1>Carregando Evento</h1>
+        <h1>Carregando Eventos</h1>
       ) : (
         <div>
-          <br />
-          <h1>Lista de Eventos</h1>
+          <h5>Lista de Eventos</h5>
           <TableContainer component={Paper} style={{ margin: "2px" }}>
             <Table size="small">
               <TableHead
-                style={{ backgroundColor: "brown", borderStyle: "solid" }}
+                style={{ backgroundColor: "red", borderStyle: "solid" }}
               >
                 <TableRow>
-                  <TableCell align="center">Nome</TableCell>
+                  <TableCell align="center">Nome Evento</TableCell>
                   <TableCell align="center">Descrição</TableCell>
                   <TableCell align="center">Data e Hora</TableCell>
                   <TableCell align="center">Local</TableCell>
-                  <TableCell align="center">Ações</TableCell>
+                  <TableCell align="center">Excluir</TableCell>
+                  <TableCell align="center">Criar Ingresso</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>{listEvents}</TableBody>
             </Table>
           </TableContainer>
-          <Button
-            fullWidth
-            variant="contained"
-            component={Link}
-            style={{ backgroundColor: "brown", borderStyle: "solid" }}
-            to="/"
-            onClick={logout}
-          >
+          <Button fullWidth variant="contained" to="/" style={{ backgroundColor: "red", borderStyle: "solid" }} onClick={logout}>
             SAIR
           </Button>
-          <p></p>
-          <Button
-            fullWidth
-            variant="contained"
-            component={Link}
-            style={{ backgroundColor: "brown", borderStyle: "solid" }}
-            to="/users"
-          >
-            Lista Salas Usuarios
+          <div>
+            <br />
+          </div>
+          <Button fullWidth variant="contained" to="/events" style={{ backgroundColor: "red", borderStyle: "solid" }} onClick={redUsers}>
+            USUARIOS
           </Button>
         </div>
       )}
     </div>
   );
 }
-export default ListEvents;
+export default listEvents;
