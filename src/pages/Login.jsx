@@ -33,6 +33,7 @@ function Login() {
       (response) => {
         alert(response.data.message);
         localStorage.setItem("authenticated", true);
+        localStorage.setItem("token", response.data.token)
         navigate("users/");
       },
       (error) => {
@@ -43,7 +44,7 @@ function Login() {
   }
 
   return (
-    <Container component="main" maxWidth="xl">
+    <Container component="main" maxWidth="xs">
       <Box
         sx={{
           marginTop: 8,
@@ -56,21 +57,16 @@ function Login() {
           sx={{
             margin: 1,
             backgroundColor: "brown",
+            width: 70, // Reduzindo o tamanho do Avatar
+            height: 70,
           }}
         >
           <LockOutlinedIcon />
         </Avatar>
-        <Typography component="h1" variant="h5">
+        <Typography component="h1" variant="h5" sx={{ mb: 2 }}>
           Vio
         </Typography>
-        <Box
-          component="form"
-          sx={{
-            mt: 1,
-          }}
-          onSubmit={handleSubmit}
-          noValidate
-        >
+        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
           <TextField
             required
             fullWidth
@@ -80,6 +76,23 @@ function Login() {
             margin="normal"
             value={user.email}
             onChange={onChange}
+            sx={{
+              '& label.Mui-focused': {
+                color: 'brown',
+              },
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: 'brown',
+                  borderRadius: 8,
+                },
+                '&:hover fieldset': {
+                  borderColor: '#795548', // Tom mais escuro no hover
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: 'brown',
+                },
+              },
+            }}
           />
           <TextField
             required
@@ -91,6 +104,23 @@ function Login() {
             type="password"
             value={user.password}
             onChange={onChange}
+            sx={{
+              '& label.Mui-focused': {
+                color: 'brown',
+              },
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: 'brown',
+                  borderRadius: 8,
+                },
+                '&:hover fieldset': {
+                  borderColor: '#795548', // Tom mais escuro no hover
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: 'brown',
+                },
+              },
+            }}
           />
           <Button
             type="submit"
@@ -100,27 +130,37 @@ function Login() {
               mt: 3,
               mb: 2,
               backgroundColor: "brown",
+              borderRadius: 8,
+              boxShadow: '2px 2px 5px rgba(0, 0, 0, 0.1)',
+              '&:hover': {
+                backgroundColor: '#795548', // Tom mais escuro no hover
+              },
             }}
           >
             Entrar
           </Button>
           <Button
-            type="submit"
+            type="button" // Alterado para 'button'
             fullWidth
-            variant="contained"
-            component = {Link}
-            to = "/cadastro"
+            variant="outlined"
+            component={Link}
+            to="/cadastro"
             sx={{
-              mt: 3,
-              mb: 2,
               backgroundColor: "brown",
+              borderRadius: 8,
+              color:"white",
+              boxShadow: '2px 2px 5px rgba(0, 0, 0, 0.1)',
+              '&:hover': {
+                backgroundColor: '#795548', // Tom mais escuro no hover
+              },
             }}
           >
-          Cadastro
+            Cadastro
           </Button>
         </Box>
       </Box>
     </Container>
   );
 }
+
 export default Login;
