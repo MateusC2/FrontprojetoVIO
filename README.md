@@ -5,7 +5,7 @@ Template para o projeto VIO:
 1. Clone o repositório:
    ```sh
    git clone https://github.com/MateusC2/FrontprojetoVIO.git
-   cd frontBase
+   cd FrontprojetoVIO
    
 2. Instale as dependências:
    ```sh
