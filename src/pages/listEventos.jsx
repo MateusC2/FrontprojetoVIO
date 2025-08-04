@@ -169,7 +169,7 @@ function listEvents() {
             <br />
           </div>
           <Button fullWidth variant="contained" to="/events" style={{ backgroundColor: "red", borderStyle: "solid" }} onClick={redUsers}>
-            USUARIOS
+            Lista de Usuarios
           </Button>
         </div>
       )}

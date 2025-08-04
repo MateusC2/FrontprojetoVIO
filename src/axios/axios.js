@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-    baseURL:"http://10.89.240.85:5000/api/v1/",
+    baseURL:"http://localhost:5000/api/v1/",
     headers:{
         'accept':'application/json'
     }
@@ -22,10 +22,24 @@ api.interceptors.request.use(
 const sheets = {
     getUsers:()=>api.get("user/"),
     postLogin:(user) => api.post("login/", user),
+    postCadastro:(user) => api.post("user/", user),
     deleteUser:(id) => api.delete("user/"+id),
     deleteEvento:(id) => api.delete("evento/"+id),
     getAllEventos:()=>api.get("evento/"),
     createIngresso:(dados) => api.post("ingresso",dados),
+
+    createEvento: (form,imagem) => {
+        const data = new FormData();
+        for (let key in form) data.append(key,form[key]);
+        if(imagem) data.append("imagem",imagem);
+
+        return api.post("/evento",data, {
+            headers:{
+                "Content-Type":"multpart/form-data",
+                Accept:"application/json",
+            }
+        })
+    }
 }
 
 export default sheets;  

@@ -154,8 +154,12 @@ function ListUsers() {
             SAIR
           </Button>
           <p></p>
-          <Button fullWidth variant="contained" component={Link} to="/events" style={{ backgroundColor: "red", borderStyle: "solid" }}>
+          <Button fullWidth variant="contained" component={Link} to="/events" style={{ backgroundColor: "red", borderStyle: "solid" , marginBottom:20}}>
             Lista Salas Eventos
+          </Button>
+
+          <Button fullWidth variant="contained" component={Link} to="/CreateEvent" style={{ backgroundColor: "red", borderStyle: "solid" }}>
+            Criar Evento
           </Button>
         </div>
       )}
