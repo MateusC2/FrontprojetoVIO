@@ -155,7 +155,7 @@ function ListUsers() {
           </Button>
           <p></p>
           <Button fullWidth variant="contained" component={Link} to="/events" style={{ backgroundColor: "red", borderStyle: "solid" , marginBottom:20}}>
-            Lista Salas Eventos
+            Lista Eventos
           </Button>
 
           <Button fullWidth variant="contained" component={Link} to="/CreateEvent" style={{ backgroundColor: "red", borderStyle: "solid" }}>

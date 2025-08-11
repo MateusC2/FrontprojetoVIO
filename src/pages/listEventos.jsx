@@ -71,7 +71,14 @@ function listEvents() {
         <TableCell align="center">{event.descricao}</TableCell>
         <TableCell align="center">{event.data_hora}</TableCell>
         <TableCell align="center">{event.local}</TableCell>
-
+        <TableCell align="center">
+          <img
+            src={`http://localhost:5000/api/v1/evento/imagem/${event.id_evento}`}
+            alt="imagem do Evento"
+            style={{ width: "80px", height: "80px", objectFit: "cover" }}
+          />
+        </TableCell>
+        <TableCell align="center">{event.tipo_Imagem}</TableCell>
         <TableCell align="center">
           <IconButton onClick={() => deleteEvento(event.id_evento)}>
             <DeleteIcon color="error" />
@@ -155,6 +162,8 @@ function listEvents() {
                   <TableCell align="center">Descrição</TableCell>
                   <TableCell align="center">Data e Hora</TableCell>
                   <TableCell align="center">Local</TableCell>
+                  <TableCell align="center">Imagem</TableCell>
+                  <TableCell align="center">Tipo da Imagem</TableCell>
                   <TableCell align="center">Excluir</TableCell>
                   <TableCell align="center">Criar Ingresso</TableCell>
                 </TableRow>
@@ -162,14 +171,29 @@ function listEvents() {
               <TableBody>{listEvents}</TableBody>
             </Table>
           </TableContainer>
-          <Button fullWidth variant="contained" to="/" style={{ backgroundColor: "red", borderStyle: "solid" }} onClick={logout}>
+          <Button
+            fullWidth
+            variant="contained"
+            to="/"
+            style={{ backgroundColor: "red", borderStyle: "solid" }}
+            onClick={logout}
+          >
             SAIR
           </Button>
           <div>
             <br />
           </div>
-          <Button fullWidth variant="contained" to="/events" style={{ backgroundColor: "red", borderStyle: "solid" }} onClick={redUsers}>
+          <Button
+            fullWidth
+            variant="contained"
+            to="/events"
+            style={{ backgroundColor: "red", borderStyle: "solid",marginBottom:20}}
+            onClick={redUsers}
+          >
             Lista de Usuarios
+          </Button>
+          <Button fullWidth variant="contained" component={Link} to="/CreateEvent" style={{ backgroundColor: "red", borderStyle: "solid" }}>
+            Criar Evento
           </Button>
         </div>
       )}
