@@ -7,7 +7,8 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { Alert, Snackbar } from "@mui/material";
+import { useState , useEffect } from "react";
 import api from "../axios/axios";
 
 function Login() {
@@ -18,6 +19,13 @@ function Login() {
 
   const navigate = useNavigate();
 
+  useEffect(()=>{
+    const refreshToken = localStorage.getItem("refresh_token")
+    if(refreshToken){
+      showAlert("warning", "Sua sessão expirou, Faça login novamente")
+    }
+  },[])
+
   const onChange = (event) => {
     const { name, value } = event.target;
     setUser({ ...user, [name]: value });
@@ -27,24 +35,60 @@ function Login() {
     event.preventDefault();
     login();
   };
+  const delay = (ms) => new Promise(res => setTimeout(res, ms));
 
   async function login() {
-    await api.postLogin(user).then(
-      (response) => {
-        alert(response.data.message);
+    try{
+      const response = await api.postLogin(user)
+      showAlert("sucess",response.data.message)
+      if (response.data.token){
         localStorage.setItem("authenticated", true);
-        localStorage.setItem("token", response.data.token)
+        localStorage.setItem("token", response.data.token);
+        await delay(2000);
         navigate("users/");
-      },
-      (error) => {
-        console.log(error);
-        alert(error.response.data.error);
+
       }
-    );
+    }catch (error){
+      console.log(error);
+      showAlert("error",error.response.data.error)
+    }
   }
+
+  const [alert, setAlert] = useState({
+    //Visibilidade (false=oculta; true = visivel)
+    open: false,
+    //Nivel do alerta (sucess, error , warning, etc)
+    severity: "",
+    //Mensagem que será exibida
+    message: "",
+  });
+
+  //Função para exibir o alerta
+  const showAlert = (severity, message) => {
+    setAlert({ open: true, severity: severity, message: message });
+    localStorage.removeItem("refresh_token");
+  };
+  //Função para fechar o alerta
+  const handleCloseAlert = () => {
+    setAlert({ ...alert, open: false });
+  };
 
   return (
     <Container component="main" maxWidth="xs">
+      <Snackbar
+        open={alert.open}
+        autoHideDuration={3000}
+        onClose={handleCloseAlert}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleCloseAlert}
+          severity={alert.severity}
+          sx={{ width: "100%" }}
+        >
+          {alert.message}
+        </Alert>
+      </Snackbar>
       <Box
         sx={{
           marginTop: 8,
@@ -66,7 +110,12 @@ function Login() {
         <Typography component="h1" variant="h5" sx={{ mb: 2 }}>
           Vio
         </Typography>
-        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
+        <Box
+          component="form"
+          onSubmit={handleSubmit}
+          noValidate
+          sx={{ mt: 1, width: "100%" }}
+        >
           <TextField
             required
             fullWidth
@@ -77,19 +126,19 @@ function Login() {
             value={user.email}
             onChange={onChange}
             sx={{
-              '& label.Mui-focused': {
-                color: 'brown',
+              "& label.Mui-focused": {
+                color: "brown",
               },
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': {
-                  borderColor: 'brown',
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": {
+                  borderColor: "brown",
                   borderRadius: 8,
                 },
-                '&:hover fieldset': {
-                  borderColor: '#795548', // Tom mais escuro no hover
+                "&:hover fieldset": {
+                  borderColor: "#795548", // Tom mais escuro no hover
                 },
-                '&.Mui-focused fieldset': {
-                  borderColor: 'brown',
+                "&.Mui-focused fieldset": {
+                  borderColor: "brown",
                 },
               },
             }}
@@ -105,19 +154,19 @@ function Login() {
             value={user.password}
             onChange={onChange}
             sx={{
-              '& label.Mui-focused': {
-                color: 'brown',
+              "& label.Mui-focused": {
+                color: "brown",
               },
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': {
-                  borderColor: 'brown',
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": {
+                  borderColor: "brown",
                   borderRadius: 8,
                 },
-                '&:hover fieldset': {
-                  borderColor: '#795548', // Tom mais escuro no hover
+                "&:hover fieldset": {
+                  borderColor: "#795548", // Tom mais escuro no hover
                 },
-                '&.Mui-focused fieldset': {
-                  borderColor: 'brown',
+                "&.Mui-focused fieldset": {
+                  borderColor: "brown",
                 },
               },
             }}
@@ -131,9 +180,9 @@ function Login() {
               mb: 2,
               backgroundColor: "brown",
               borderRadius: 8,
-              boxShadow: '2px 2px 5px rgba(0, 0, 0, 0.1)',
-              '&:hover': {
-                backgroundColor: '#795548', // Tom mais escuro no hover
+              boxShadow: "2px 2px 5px rgba(0, 0, 0, 0.1)",
+              "&:hover": {
+                backgroundColor: "#795548", // Tom mais escuro no hover
               },
             }}
           >
@@ -148,10 +197,10 @@ function Login() {
             sx={{
               backgroundColor: "brown",
               borderRadius: 8,
-              color:"white",
-              boxShadow: '2px 2px 5px rgba(0, 0, 0, 0.1)',
-              '&:hover': {
-                backgroundColor: '#795548', // Tom mais escuro no hover
+              color: "white",
+              boxShadow: "2px 2px 5px rgba(0, 0, 0, 0.1)",
+              "&:hover": {
+                backgroundColor: "#795548", // Tom mais escuro no hover
               },
             }}
           >

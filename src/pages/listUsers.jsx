@@ -42,7 +42,7 @@ function ListUsers() {
   function logout() {
     localStorage.removeItem("authenticated");
     navigate("/");
-  }
+  } 
 
 
   const openDeleteModal = (id,name) => {
