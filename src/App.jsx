@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import Cadastro from "./pages/Cadastro";
 import ListEvents from "./pages/listEventos";
 import CreateEvent from "./pages/CreateEvent";
+import Dashboard from "./pages/Dashboard";
 
 function App() {
   return (
@@ -35,6 +36,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <CreateEvent/>
+              </ProtectedRoute>
+            }
+          />
+
+            <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard/>
               </ProtectedRoute>
             }
           />

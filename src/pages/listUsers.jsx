@@ -24,7 +24,7 @@ function ListUsers() {
     //Nivel do alerta (sucess, error , warning, etc)
     severity: "",
     //Mensagem que será exibida
-    message: ""
+    message: "",
   });
   //Função para exibir o alerta
   const showAlert = (severity, message) => {
@@ -42,14 +42,12 @@ function ListUsers() {
   function logout() {
     localStorage.removeItem("authenticated");
     navigate("/");
-  } 
-
-
-  const openDeleteModal = (id,name) => {
-    setuserToDelete({id: id, name : name});
-    setModalOpen(true);
   }
 
+  const openDeleteModal = (id, name) => {
+    setuserToDelete({ id: id, name: name });
+    setModalOpen(true);
+  };
 
   async function getUsers() {
     // Chamada da Api
@@ -63,14 +61,14 @@ function ListUsers() {
       }
     );
   }
-  async function deleteUser () {
-    try{
+  async function deleteUser() {
+    try {
       await api.deleteUser(userToDelete.id);
       await getUsers();
       //Mensagem informativa de successo
       showAlert("success", "Usuario deletado com sucesso!");
       setModalOpen(false);
-    }catch(error){
+    } catch (error) {
       console.log("Erro ao deletar usuario...", error);
       //Mensagem informativa de error
       showAlert("error", error.response.data.message);
@@ -80,12 +78,14 @@ function ListUsers() {
 
   const listUsers = users.map((user) => {
     return (
-      <TableRow key = {user.id_usuario}>
+      <TableRow key={user.id_usuario}>
         <TableCell align="center">{user.name}</TableCell>
         <TableCell align="center">{user.email}</TableCell>
         <TableCell align="center">{user.cpf}</TableCell>
         <TableCell align="center">
-          <IconButton onClick={() => openDeleteModal(user.id_usuario,user.name)}>
+          <IconButton
+            onClick={() => openDeleteModal(user.id_usuario, user.name)}
+          >
             <DeleteIcon color="error" />
           </IconButton>
         </TableCell>
@@ -116,15 +116,14 @@ function ListUsers() {
           {alert.message}
         </Alert>
       </Snackbar>
-      <ConfirmDelete 
-      open={ModalOpen} 
-      userName={userToDelete.name} 
-      onConfirm = {deleteUser}
-      onClose={()=> setModalOpen(false)}
-
+      <ConfirmDelete
+        open={ModalOpen}
+        userName={userToDelete.name}
+        onConfirm={deleteUser}
+        onClose={() => setModalOpen(false)}
       />
       {users.length === 0 ? (
-          <h1>Carregando Usuarios</h1>
+        <h1>Carregando Usuarios</h1>
       ) : (
         <div>
           <h5>Lista de usuários</h5>
@@ -154,12 +153,38 @@ function ListUsers() {
             SAIR
           </Button>
           <p></p>
-          <Button fullWidth variant="contained" component={Link} to="/events" style={{ backgroundColor: "red", borderStyle: "solid" , marginBottom:20}}>
+          <Button
+            fullWidth
+            variant="contained"
+            component={Link}
+            to="/events"
+            style={{
+              backgroundColor: "red",
+              borderStyle: "solid",
+              marginBottom: 20,
+            }}
+          >
             Lista Eventos
           </Button>
 
-          <Button fullWidth variant="contained" component={Link} to="/CreateEvent" style={{ backgroundColor: "red", borderStyle: "solid" }}>
+          <Button
+            fullWidth
+            variant="contained"
+            component={Link}
+            to="/CreateEvent"
+            style={{ backgroundColor: "red", borderStyle: "solid",marginBottom:20  }}
+          >
             Criar Evento
+          </Button>
+
+          <Button
+            fullWidth
+            variant="contained"
+            component={Link}
+            to="/dashboard"
+            style={{ backgroundColor: "red", borderStyle: "solid" }}
+          >
+            Ver Dashboard
           </Button>
         </div>
       )}
